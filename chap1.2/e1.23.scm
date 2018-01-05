@@ -1,18 +1,17 @@
 #lang sicp
 (#%require "../shared.scm")
 
-(define (next-test n)
-  (if (= n 2)
-      3
-      (+ n 2)))
-
-(define (improved-find-divisor n test-divisor)
+(define (find-divisor n test-divisor)
+  (define (next-test n)
+    (if (= n 2)
+        3
+        (+ n 2)))
   (cond ((> (square test-divisor) n) n)
         ((divide? test-divisor n) test-divisor)
-        (else (improved-find-divisor n (next-test test-divisor)))))
+        (else (find-divisor n (next-test test-divisor)))))
 
 (define (smallest-divisor n)
-  (improved-find-divisor n 2))
+  (find-divisor n 2))
 
 (define (prime? n)
   (= n (smallest-divisor n)))
