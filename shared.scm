@@ -16,6 +16,32 @@
 (define (double x)
   (+ x x))
 
+(define (expt b n)
+  (define (fast-expt-iter b n result)
+    (cond ((< n 1) result)
+          ((even? n) (fast-expt-iter (* b b) (/ n 2) result))
+          (else (fast-expt-iter b (- n 1) (* result b)))))
+  (fast-expt-iter b n 1))
+
+(define (average-damp f)
+  (lambda (x)
+    (average x (f x))))
+
+(define (sqrt x)
+  (fixed-point
+   (average-damp (lambda (y)
+                   (/ x y)))
+   1))
+
+(define (fixed-point f guess)
+  (define (iter old new)
+    (if (close-enough? old new)
+        new
+        (iter new (f new))))
+  (define (close-enough? a b)
+    (< (abs (- a b)) 0.00001))
+  (iter guess (f guess)))
+
 (define (divide? a b)
   (= (remainder b a) 0))
 
@@ -48,3 +74,14 @@
 (define (accumulate combiner null-value term a next b)
   (define (true x) #t)
   (filtered-accumulate true combiner null-value term a next b))
+
+(define (cont-frac-gen n d combinator k)
+  (define (cont-frac-iter i result)
+    (cond ((< i 1) result)
+          (else (cont-frac-iter (dec i)
+                                (/ (n i)
+                                   (combinator (d i) result))))))
+  (cont-frac-iter k 0))
+
+(define (cont-frac n d k)
+  (cont-frac-gen n d + k))
