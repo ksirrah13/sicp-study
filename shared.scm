@@ -33,6 +33,19 @@
                    (/ x y)))
    1))
 
+(define (nth-root n x)
+  (define (nth-root-fp n x)
+    (lambda (y)
+      (/ x
+         (expt y (dec n)))))
+  (define (damp-count n-root)
+    (ceiling (- (/ (log (inc n-root))
+                   (log 2))
+                1)))
+  (let ((fp (nth-root-fp n x))
+        (avg-damp (repeated average-damp (damp-count n))))
+    (fixed-point (avg-damp fp) 1)))
+
 (define (fixed-point f guess)
   (define (iter old new)
     (if (close-enough? old new)
@@ -85,3 +98,27 @@
 
 (define (cont-frac n d k)
   (cont-frac-gen n d + k))
+
+(define (newton f guess)
+  (define df (deriv f))
+  (fixed-point(lambda (x)
+                (- x (/ (f x) (df x))))
+              guess))
+
+(define (deriv f)
+  (define dx 0.00001)
+  (lambda (x)
+    (/ (- (f (+ x dx))
+          (f x))
+       dx)))
+
+(define (compose f g)
+  (lambda (x)
+    (f (g x))))
+
+(define (repeated f n)
+  (define (iter g i)
+    (if (< i 2)
+        g
+        (iter (compose f g) (dec i))))
+  (iter f n))
