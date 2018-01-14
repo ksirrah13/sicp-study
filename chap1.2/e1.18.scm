@@ -1,5 +1,5 @@
 #lang sicp
-(#%require "../shared.scm")
+(#%require "../lib/ch1-shared.scm")
 
 ; faster iterative mult
 (define (faster-mult a b)

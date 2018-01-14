@@ -1,6 +1,7 @@
 #lang sicp
 (#%provide (all-defined))
 
+;; Number Operations
 (define (square x)
   (* x x))
 
@@ -9,6 +10,11 @@
 
 (define (average x y)
   (/ (+ x y) 2))
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
 
 (define (half x)
   (/ x 2))
@@ -22,10 +28,6 @@
           ((even? n) (fast-expt-iter (* b b) (/ n 2) result))
           (else (fast-expt-iter b (- n 1) (* result b)))))
   (fast-expt-iter b n 1))
-
-(define (average-damp f)
-  (lambda (x)
-    (average x (f x))))
 
 (define (sqrt x)
   (fixed-point
@@ -46,23 +48,6 @@
         (avg-damp (repeated average-damp (damp-count n))))
     (fixed-point (avg-damp fp) 1)))
 
-(define (fixed-point f guess)
-  (define (iter old new)
-    (if (close-enough? old new)
-        new
-        (iter new (f new))))
-  (define (close-enough? a b)
-    (< (abs (- a b)) 0.00001))
-  (iter guess (f guess)))
-
-(define (divide? a b)
-  (= (remainder b a) 0))
-
-(define (gcd a b)
-  (if (= b 0)
-      a
-      (gcd b (remainder a b))))
-
 (define (smallest-divisor n)
   (define (next-test n)
     (if (= n 2) 3 (+ n 2)))
@@ -72,9 +57,54 @@
           (else (find-divisor n (next-test test-divisor)))))
   (find-divisor n 2))
 
+;; Conditions
+(define (divide? a b)
+  (= (remainder b a) 0))
+
 (define (prime? n)
   (and (> n 1)
        (= n (smallest-divisor n))))
+
+
+;; Function Modifiers
+(define (average-damp f)
+  (lambda (x)
+    (average x (f x))))
+
+(define (deriv f)
+  (define dx 0.00001)
+  (lambda (x)
+    (/ (- (f (+ x dx))
+          (f x))
+       dx)))
+
+(define (compose f g)
+  (lambda (x)
+    (f (g x))))
+
+(define (repeated f n)
+  (define (iter g i)
+    (if (< i 2)
+        g
+        (iter (compose f g) (dec i))))
+  (iter f n))
+
+
+;; Numerical Function Operations
+(define (fixed-point f guess)
+  (define (iter old new)
+    (if (close-enough? old new)
+        new
+        (iter new (f new))))
+  (define (close-enough? a b)
+    (< (abs (- a b)) 0.00001))
+  (iter guess (f guess)))
+
+(define (newton f guess)
+  (define df (deriv f))
+  (fixed-point(lambda (x)
+                (- x (/ (f x) (df x))))
+              guess))
 
 (define (filtered-accumulate filter combiner null-value term a next b)
   (define (iter cur result)
@@ -99,26 +129,4 @@
 (define (cont-frac n d k)
   (cont-frac-gen n d + k))
 
-(define (newton f guess)
-  (define df (deriv f))
-  (fixed-point(lambda (x)
-                (- x (/ (f x) (df x))))
-              guess))
 
-(define (deriv f)
-  (define dx 0.00001)
-  (lambda (x)
-    (/ (- (f (+ x dx))
-          (f x))
-       dx)))
-
-(define (compose f g)
-  (lambda (x)
-    (f (g x))))
-
-(define (repeated f n)
-  (define (iter g i)
-    (if (< i 2)
-        g
-        (iter (compose f g) (dec i))))
-  (iter f n))

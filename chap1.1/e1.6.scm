@@ -1,5 +1,5 @@
 #lang sicp
-(#%require "../shared.scm")
+(#%require "../lib/ch1-shared.scm")
 
 (define (new-if pred then-result else-result)
   (cond (pred then-result)

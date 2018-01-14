@@ -1,5 +1,5 @@
 #lang sicp
-(#%require "../shared.scm")
+(#%require "../lib/ch1-shared.scm")
 
 (define (compose f g)
   (lambda (x)

@@ -1,5 +1,5 @@
 #lang sicp
-(#%require "../shared.scm")
+(#%require "../lib/ch1-shared.scm")
 
 (define (f g)
   (g 2))

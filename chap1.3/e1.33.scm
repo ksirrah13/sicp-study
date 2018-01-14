@@ -1,5 +1,5 @@
 #lang sicp
-(#%require "../shared.scm")
+(#%require "../lib/ch1-shared.scm")
 
 ;; recursive
 (define (r-filtered-accumulate filter combiner null-value term a next b)

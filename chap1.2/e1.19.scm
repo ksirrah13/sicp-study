@@ -1,5 +1,5 @@
 #lang sicp
-(#%require "../shared.scm")
+(#%require "../lib/chap1-shared.scm")
 
 ; fast fib
 (define (fib n) 
