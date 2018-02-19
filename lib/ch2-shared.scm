@@ -1,5 +1,6 @@
 #lang sicp
 (#%provide (all-defined))
+(#%require sicp-pict)
 
 ;; Points
 (define (make-point x y)
@@ -61,7 +62,47 @@
       (op (car sequence)
           (accumulate op initial (cdr sequence)))))
 
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      nil
+      (cons (accumulate op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
+
 (define (enumerate-interval low high)
   (if (> low high)
       nil
       (cons low (enumerate-interval (+ low 1) high))))
+
+(define fold-right accumulate)
+
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+
+(define (flatmap proc seq)
+  (accumulate append nil (map proc seq)))
+
+(define (filter predicate sequence)
+  (cond ((null? sequence) nil)
+        ((predicate (car sequence))
+         (cons (car sequence)
+               (filter predicate (cdr sequence))))
+        (else (filter predicate (cdr sequence)))))
+
+;; Picture Language
+(define (split primary-comb second-comb)
+  (lambda (painter n)
+    (let ((s (split primary-comb second-comb)))
+      (if (= n 0)
+          painter
+          (let ((smaller (s painter (dec n))))
+            (primary-comb painter (second-comb smaller smaller)))))))
+
+(define up-split (split below beside))
+
+(define right-split (split beside below))
+
