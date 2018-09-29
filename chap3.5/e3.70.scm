@@ -1,0 +1,38 @@
+#lang sicp
+(#%require "../lib/streams.scm")
+
+(define (weighted-pairs weight s t)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (merge-weighted weight
+    (stream-map (lambda (x) (list (stream-car s) x))
+                (stream-cdr t))
+    (weighted-pairs weight (stream-cdr s) (stream-cdr t)))))
+
+(define (sum-of-pair p)
+  (+ (car p) (cadr p)))
+
+(display-stream (weighted-pairs sum-of-pair integers integers))
+;(1 1)
+;(1 2)
+;(2 2)
+;(1 3)
+;(2 3)
+;(1 4)
+;(3 3)
+;(2 4)
+;(1 5)
+;(3 4)
+;(2 5)
+;(1 6)
+;(4 4)
+;(3 5)
+;(2 6)
+;(1 7)
+;(4 5)
+;(3 6)
+;(2 7)
+;(1 8)
+;(5 5)
+;(4 6)
+;(3 7)
